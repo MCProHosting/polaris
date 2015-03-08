@@ -21,7 +21,8 @@
     "bluebird": "^2.9.13",
     "config": "^1.12.0",
     "liferaft": "^0.1.0",
-    "lodash": "^3.4.0"
+    "lodash": "^3.4.0",
+    "node-uuid": "^1.4.3"
   },
   "devDependencies": {
     "chai": "^2.1.1",

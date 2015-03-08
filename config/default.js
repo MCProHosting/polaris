@@ -24,5 +24,12 @@ module.exports = {
             'election max': 5000,
             'heartbeat': 1000
         }
+    },
+    job: {
+        // Number of times to retry an "ensured" job range before marking
+        // it as failed and writing an error log.
+        retries: 5,
+        // How frequently instances communicate status updates to each other.
+        heartbeat: 1000
     }
 };
