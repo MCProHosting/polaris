@@ -19,7 +19,9 @@
   "dependencies": {
     "axon": "^2.0.1",
     "bluebird": "^2.9.13",
+    "commander": "^2.6.0",
     "config": "^1.12.0",
+    "express": "^4.12.2",
     "liferaft": "^0.1.0",
     "lodash": "^3.4.0",
     "node-uuid": "^1.4.3"
