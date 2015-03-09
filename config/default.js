@@ -30,6 +30,9 @@ module.exports = {
         // it as failed and writing an error log.
         retries: 5,
         // How frequently instances communicate status updates to each other.
-        heartbeat: 1000
+        heartbeat: 1000,
+        // How to to wait after the last update before we mark a job as
+        // "stale" and reassign it to a different node.
+        staleTimeout: 2000,
     }
 };

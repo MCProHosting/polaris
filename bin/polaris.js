@@ -10,10 +10,6 @@ program
     .option('-s, --serve [host:port]', 'Runs the web interface and API on the address.')
     .parse(process.argv);
 
-if (!program.args.length) {
-    program.help();
-}
-
 var polaris = new Polaris().boot();
 if (program.serve) {
     serve(polaris, program.serve);
