@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha tests --recursive && node node_modules/jshint/bin/jshint lib"
+    "test": "node node_modules/mocha/bin/mocha test --recursive && node node_modules/jshint/bin/jshint lib"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "chai": "^2.1.1",
+    "jshint": "^2.6.3",
     "mocha": "^2.2.0",
     "sinon": "^1.13.0"
   }
