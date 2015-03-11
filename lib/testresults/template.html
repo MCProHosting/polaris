@@ -78,8 +78,8 @@
             y_label: 'Work Done'
         });
 
-        var missing = [];
-        var duplicates = [];
+        var missing = [{ value: minInData, amt: 0 }];
+        var duplicates = [{ value: minInData, amt: 0 }];
         var count = { missing: 0, duplicates: 0 };
         var wheres = _.range(minInData, maxInData).map(function (i) {
             return _.where(data, { point: i }).length;
@@ -103,13 +103,15 @@
                     duplicates.push({ value: i, amt: wheres[i] });
                 }
                 if (i < maxInData - 1 && wheres[i + 1] < 2) {
-                    missing.push({ value: i, amt: 0 });
+                    duplicates.push({ value: i, amt: 0 });
                     duplicates.push({ value: i + 1, amt: 0 });
                 }
 
                 count.duplicates++;
             }
         }
+        missing.push({ value: maxInData, amt: 0 });
+        duplicates.push({ value: maxInData, amt: 0 });
 
         if (!duplicates.length) {
             $('#duplicates').html('No duplicates');
