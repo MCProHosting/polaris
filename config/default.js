@@ -34,5 +34,13 @@ module.exports = {
         // How to to wait after the last update before we mark a job as
         // "stale" and reassign it to a different node.
         staleTimeout: 2000,
+    },
+    redis: {
+        // Options for redis-fantastico as seen in
+        // https://github.com/MCProHosting/redis-fantastico
+        check_interval: 10000,
+        host: 'localhost',
+        port: 6379,
+        options: {}
     }
 };

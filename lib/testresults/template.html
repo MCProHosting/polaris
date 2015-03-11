@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.2.1/metricsgraphics.min.css">
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.2.1/metricsgraphics.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.4.0/lodash.min.js"></script>
+
+    <style type="text/css">
+        body {
+            background: #eee;
+            font-family: 'Open Sans', sans-serif;
+        }
+        .container {
+            width: 1000px;
+            margin: 0 auto;
+        }
+        .half {
+            width: 460px;
+            margin: 10px;
+            float: left;
+        }
+        h2.mg-chart-title {
+            font-size: 1.5em;
+            margin: 10px 0 -20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="rates">
+
+        </div>
+        <div class="half">
+            <div id="duplicates">
+
+            </div>
+        </div>
+        <div class="half">
+            <div id="missing">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        var data = [
+            <% _.forEach(data, function (pt) { %>
+                { date: new Date(<%= pt.date %>), point: <%= pt.point %> },
+            <% }); %>
+        ];
+        var maxInData = _.max(data, 'point');
+        var minInData = _.min(data, 'point');
+
+        MG.data_graphic({
+            title: "Work Rate",
+            description: "Rate of work Polaris runs at.",
+            data: data.map(function (d) { return { date: (d.date - data[0].date) / 1000, point: d.point }; }),
+            binned: false,
+            chart_type: 'histogram',
+            width: 900,
+            height: 300,
+            right: 10,
+            bins: 20,
+            target: '#rates',
+            y_extended_ticks: true,
+            x_accessor:'date',
+            y_accessor:'point',
+            x_label: 'Seconds',
+            y_label: 'Work Done'
+        });
+
+        var missing = [];
+        var duplicates = [];
+        for (var i = minInData; i < maxInData; i++) {
+            var number = _.where(data, { point: i }).length;
+            if (number === 0) {
+                missing.push({ value: i, amt: 1 });
+            }
+            if (number > 1) {
+                duplicates.push({ value: i, amt: number });
+            }
+        }
+
+        if (!duplicates.length) {
+            $('#duplicates').html('No duplicates');
+        } else {
+            MG.data_graphic({
+                title: "Duplicated Values",
+                data: duplicates,
+                interpolate: 'basic',
+                missing_is_zero: true,
+                width: 460,
+                height: 400,
+                right: 10,
+                min_x: minInData,
+                max_x: maxInData,
+                target: '#duplicates',
+                x_accessor: 'value',
+                y_accessor: 'number',
+            });
+        }
+
+        if (!missing.length) {
+            $('#missing').html('No missing');
+        } else {
+            MG.data_graphic({
+                title: "Duplicated Values",
+                data: missing,
+                interpolate: 'basic',
+                missing_is_zero: true,
+                width: 460,
+                height: 400,
+                right: 10,
+                min_x: minInData,
+                max_x: maxInData,
+                target: '#missing',
+                x_accessor: 'value',
+                y_accessor: 'number',
+            });
+        }
+    </script>
+</body>
+</html>

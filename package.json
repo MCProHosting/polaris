@@ -25,7 +25,9 @@
     "express": "^4.12.2",
     "liferaft": "^0.1.0",
     "lodash": "^3.4.0",
-    "node-uuid": "^1.4.3"
+    "node-uuid": "^1.4.3",
+    "redis-fantastico": "git+https://github.com/MCProHosting/redis-fantastico.git",
+    "request": "^2.53.0"
   },
   "devDependencies": {
     "chai": "^2.1.1",
