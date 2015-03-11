@@ -41,6 +41,8 @@ module.exports = {
         check_interval: 10000,
         host: 'localhost',
         port: 6379,
-        options: {}
+        options: {},
+        // Token under which jobs are stored in Redis.
+        jobToken: 'polaris:jobs'
     }
 };

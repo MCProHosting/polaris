@@ -28,7 +28,7 @@ program
         var exec = require('child_process').exec;
         var request = require('request');
 
-        _.range(1, options.workers).forEach(function boot (i) {
+        _.range(1, +options.workers + 1 ).forEach(function boot (i) {
             exec(
                 cmd + (i === 1 ? ' -s 127.0.0.1:3000' : ''),
                 { env: { NODE_APP_INSTANCE: i }},
@@ -36,7 +36,6 @@ program
                     if (error !== null) {
                         console.log('stdout: ' + stdout);
                         console.log('stderr: ' + stderr);
-                        console.log('exec error: ' + error);
                     }
 
                     boot(i);

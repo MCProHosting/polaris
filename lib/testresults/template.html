@@ -29,6 +29,10 @@
             font-size: 1.5em;
             margin: 10px 0 -20px;
         }
+        p.stat {
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -53,8 +57,8 @@
                 { date: new Date(<%= pt.date %>), point: <%= pt.point %> },
             <% }); %>
         ];
-        var maxInData = _.max(data, 'point');
-        var minInData = _.min(data, 'point');
+        var maxInData = _.max(data, 'point').point;
+        var minInData = _.min(data, 'point').point;
 
         MG.data_graphic({
             title: "Work Rate",
@@ -76,13 +80,34 @@
 
         var missing = [];
         var duplicates = [];
+        var count = { missing: 0, duplicates: 0 };
+        var wheres = _.range(minInData, maxInData).map(function (i) {
+            return _.where(data, { point: i }).length;
+        });
         for (var i = minInData; i < maxInData; i++) {
-            var number = _.where(data, { point: i }).length;
-            if (number === 0) {
-                missing.push({ value: i, amt: 1 });
+            if (wheres[i] === 0) {
+                if (i > 0 && wheres[i - 1] !== 0) {
+                    missing.push({ value: i - 1, amt: 0 });
+                    missing.push({ value: i, amt: 1 });
+                }
+                if (i < maxInData - 1 && wheres[i + 1] !== 0) {
+                    missing.push({ value: i, amt: 1 });
+                    missing.push({ value: i + 1, amt: 0 });
+                }
+
+                count.missing++;
             }
-            if (number > 1) {
-                duplicates.push({ value: i, amt: number });
+            if (wheres[i] > 1) {
+                if (i > 0 && wheres[i - 1] < 2) {
+                    duplicates.push({ value: i - 1, amt: 0 });
+                    duplicates.push({ value: i, amt: wheres[i] });
+                }
+                if (i < maxInData - 1 && wheres[i + 1] < 2) {
+                    missing.push({ value: i, amt: 0 });
+                    duplicates.push({ value: i + 1, amt: 0 });
+                }
+
+                count.duplicates++;
             }
         }
 
@@ -91,37 +116,39 @@
         } else {
             MG.data_graphic({
                 title: "Duplicated Values",
-                data: duplicates,
+                data: _.uniq(duplicates, 'value'),
                 interpolate: 'basic',
-                missing_is_zero: true,
                 width: 460,
-                height: 400,
+                height: 300,
                 right: 10,
-                min_x: minInData,
-                max_x: maxInData,
+                min_x: new Date(minInData),
+                max_x: new Date(maxInData),
                 target: '#duplicates',
                 x_accessor: 'value',
-                y_accessor: 'number',
+                y_accessor: 'amt',
             });
+            var percent = Math.round(count.duplicates / (maxInData - minInData) * 100000) / 1000;
+            $('#duplicates').append('<p class="stat">' + count.duplicates + ' Duplicates (' + percent + '%)</p>');
         }
 
         if (!missing.length) {
             $('#missing').html('No missing');
         } else {
             MG.data_graphic({
-                title: "Duplicated Values",
-                data: missing,
+                title: "Missing Values",
+                data: _.uniq(missing, 'value'),
                 interpolate: 'basic',
-                missing_is_zero: true,
                 width: 460,
-                height: 400,
+                height: 300,
                 right: 10,
-                min_x: minInData,
-                max_x: maxInData,
+                min_x: new Date(minInData),
+                max_x: new Date(maxInData),
                 target: '#missing',
                 x_accessor: 'value',
-                y_accessor: 'number',
+                y_accessor: 'amt',
             });
+            var percent = Math.round(count.missing / (maxInData - minInData) * 100000) / 1000;
+            $('#missing').append('<p class="stat">' + count.missing + ' Missing (' + percent + '%)</p>');
         }
     </script>
 </body>
