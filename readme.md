@@ -26,12 +26,14 @@ I built and ran a test job, whose purpose was to add the current task "point" in
 | Job Length | Duplicates     | Missing    |
 | ---------- | -------------- | ---------- |
 | 1,000      | 6 (0.601%)     | 0 (0.000%) |
-| 5,000      | 83 (1.660%)    | 0 (0.000%) |
-| 10,000     | 149 (1.490%)   | 0 (0.000%) |
-| 50,000     | 1260 (2.520%) | 0 (0.000%) |
+| 5,000      | 83 (1.66%)     | 0 (0.000%) |
+| 10,000     | 149 (1.49%)    | 0 (0.000%) |
+| 50,000     | 1260 (2.52%)   | 0 (0.000%) |
+| 100,000    | 2256 (2.25%)   | 0 (0.000%) |
 
 ## Scalability
 
+ * With increasingly large jobs, at a constant failure rate, the number (_not_ percentage) of duplicates should increase in O(n^0.5). Duplicate percentage therefore will decrease.
  * Network traffic increases in O(n) relative to the number of nodes in the cluster, and is independent of the number or size of ongoing jobs.
  * Memory usage increases in O(n) relative to the number of ongoing jobs, and O(n^0.5) relative to the job size. The number of clusters in the node does not have a significant direct impact on memory usage, but node failures result in segmentation and in increases in memory usage.
  * CPU usage follows the same scaling pattern as memory usage, but is generally trivial (network latency is the bottleneck).

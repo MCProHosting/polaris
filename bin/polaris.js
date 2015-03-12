@@ -7,10 +7,7 @@ var Polaris = require('../lib/polaris');
 var serve = require('../lib/http/server');
 var polaris;
 
-program
-    .version(pack.version)
-    .option('-s, --serve [host:port]', 'Runs the web interface and API on the address.')
-    .option('-c, --chronic', 'Workers suffer from a chronic disease and die after a time.');
+program.version(pack.version);
 
 //
 // Command that starts several polaris instances and runs a test command.
@@ -57,12 +54,17 @@ program
 program
     .command('testresults')
     .description('Saves test results in the cwd')
-    .action(function () {
+    .option('-s, --stat', 'Output stats to the CLI instead of making an html file.')
+    .action(function (options) {
         var redis = require('../lib/db/redis');
         setTimeout(function () {
             redis.getMaster().client.lrange('polarisTest', 0, 1 << 30, function (err, results) {
-                var html = require('../lib/testresults')(results);
-                require('fs').writeFileSync('results.html', html);
+                if (options.stat) {
+                    require('../lib/testresults').log(results);
+                } else {
+                    var html = require('../lib/testresults').render(results);
+                    require('fs').writeFileSync('results.html', html);
+                }
                 process.exit(0);
             });
         }, 500);
@@ -73,6 +75,8 @@ program
 //
 program
     .command('run')
+    .option('-s, --serve [host:port]', 'Runs the web interface and API on the address.')
+    .option('-c, --chronic', 'Workers suffer from a chronic disease and die after a time.')
     .action(run);
 
 program.parse(process.argv);
