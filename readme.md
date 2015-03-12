@@ -16,6 +16,22 @@ A job has the following basic components:
  * `metadata` to use as necessary for telling clients how to process the job.
  * `name` for Polaris to know what job type to use for this job.
  * `id` a UUIDv4 that identifies the task.
- * `ensure` - a boolean. This lets Polaris know what to do if a node that is working on a task fails. If `ensure=true`, then we'll reassign the task and resume from where the child told us it was last at. This is fine for when you don't mind a task being run in duplicates. If `ensure=false`, we'll drop the task and mark it as ABORTED.
 
 Implementation-side, you can view the `lib/job/test` directory to see an example job type. Each type consists of a Client, responsible for actually working on the job, and a Master, which is used on leader nodes to oversee the job's progress.
+
+## So, how stable?
+
+I built and ran a test job, whose purpose was to add the current task "point" into a Redis list ten times a second. It was run in a four-worker cluster with workers designed to randomly crash every 15 to 45 seconds. The results are shown below:
+
+| Job Length | Duplicates     | Missing    |
+| ---------- | -------------- | ---------- |
+| 1,000      | 6 (0.601%)     | 0 (0.000%) |
+| 5,000      | 83 (1.660%)    | 0 (0.000%) |
+| 10,000     | 149 (1.490%)   | 0 (0.000%) |
+| 50,000     | 149 (2.526%)   | 0 (0.000%) |
+
+## Scalability
+
+ * Network traffic increases in O(n) relative to the number of nodes in the cluster, and is independent of the number or size of ongoing jobs.
+ * Memory usage increases in O(n) relative to the number of ongoing jobs, and O(n^0.5) relative to the job size. The number of clusters in the node does not have a significant direct impact on memory usage, but node failures result in segmentation and in increases in memory usage.
+ * CPU usage follows the same scaling pattern as memory usage, but is generally trivial (network latency is the bottleneck).

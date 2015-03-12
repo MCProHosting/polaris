@@ -19,7 +19,6 @@ program
 program
     .command('test')
     .description('Runs a Polaris cluster to test stability.')
-    .option('-e, --ensure', 'Makes the job be ensured.')
     .option('-from, --from [number]', 'Sets the start of the command range.')
     .option('-to, --to [number]', 'Sets the end of the command range.')
     .option('-w, --workers [number]', 'Sets the number of Polaris workers.')
@@ -47,8 +46,7 @@ program
             request.post('http://127.0.0.1:3000/api/v1/jobs', { form: {
                 name: 'test',
                 start: options.from,
-                end: options.to,
-                ensure: options.ensure ? 1 : 0
+                end: options.to
             }});
         }, 5000);
     });

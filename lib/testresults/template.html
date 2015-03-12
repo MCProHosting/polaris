@@ -78,35 +78,30 @@
             y_label: 'Work Done'
         });
 
-        var missing = [{ value: minInData, amt: 0 }];
-        var duplicates = [{ value: minInData, amt: 0 }];
+        var missing = [], duplicates = [];
         var count = { missing: 0, duplicates: 0 };
-        var wheres = _.range(minInData, maxInData).map(function (i) {
-            return _.where(data, { point: i }).length;
-        });
+        var lastAmt = -1, lastRecorded = true;
         for (var i = minInData; i < maxInData; i++) {
-            if (wheres[i] === 0) {
-                if (i > 0 && wheres[i - 1] !== 0) {
-                    missing.push({ value: i - 1, amt: 0 });
-                    missing.push({ value: i, amt: 1 });
-                }
-                if (i < maxInData - 1 && wheres[i + 1] !== 0) {
-                    missing.push({ value: i, amt: 1 });
-                    missing.push({ value: i + 1, amt: 0 });
+            var amt = _.where(data, { point: i }).length;
+
+            if (amt !== lastAmt) {
+                if (!lastRecorded) {
+                    missing.push({ value: i - 1, amt: lastAmt === 0 ? 1 : 0 });
+                    duplicates.push({ value: i - 1, amt: Math.max(lastAmt - 1, 0) });
                 }
 
+                missing.push({ value: i, amt: amt === 0 ? 1 : 0 });
+                duplicates.push({ value: i, amt: Math.max(amt - 1, 0) });
+                lastAmt = amt;
+                lastRecorded = true;
+            } else {
+                lastRecorded = false;
+            }
+
+            if (amt === 0) {
                 count.missing++;
             }
-            if (wheres[i] > 1) {
-                if (i > 0 && wheres[i - 1] < 2) {
-                    duplicates.push({ value: i - 1, amt: 0 });
-                    duplicates.push({ value: i, amt: wheres[i] });
-                }
-                if (i < maxInData - 1 && wheres[i + 1] < 2) {
-                    duplicates.push({ value: i, amt: 0 });
-                    duplicates.push({ value: i + 1, amt: 0 });
-                }
-
+            if (amt > 1) {
                 count.duplicates++;
             }
         }
