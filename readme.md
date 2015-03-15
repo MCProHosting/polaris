@@ -30,6 +30,7 @@ I built and ran a test job, whose purpose was to add the current task "point" in
 | 10,000     | 149 (1.49%)    | 0 (0.000%) |
 | 50,000     | 1260 (2.52%)   | 0 (0.000%) |
 | 100,000    | 2256 (2.25%)   | 0 (0.000%) |
+| 1,000,000  | 2900 (0.29%)   | 0 (0.000%) |
 
 ## Scalability
 
